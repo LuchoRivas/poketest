@@ -18,10 +18,10 @@ const swaggerSpec = require('./swagger-config');
 // });
 
 // Express.js configuration.
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: true
 }));
-app.use(bodyParser.json());
 // app.use(compression());
 
 app.use(function (req, res, next) {
