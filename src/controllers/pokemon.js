@@ -6,7 +6,7 @@ const P = new Pokedex();
  */
 module.exports.getPokeByName = async (req, res, next) => {
     try {
-        const pokemon = req.params.pokemon;
+        const pokemon = req.params.pokemon.toLowerCase();
         P.getPokemonByName(pokemon)
         .then(function(response) {
             console.log(response);
