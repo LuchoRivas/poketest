@@ -10,9 +10,8 @@ module.exports.getPokeByName = async (req, res, next) => {
         const pokemonSearch = req.params.pokemon.toLowerCase();
         const pokemon = await P.getPokemonByName(pokemonSearch);
         const pokemon_getSpecies = await P.getPokemonSpeciesByName(pokemonSearch);
-        const pokemon_es_description = pokemon_getSpecies.flavor_text_entries.filter(p => p.language.name === "es");
+        const pokemon_es_description = pokemon_getSpecies && pokemon_getSpecies.flavor_text_entries.filter(p => p.language.name === "es");
         pokemon.species = pokemon_es_description;
-        // console.log();
         return res.json(pokemon);
     }
     catch (err) {
