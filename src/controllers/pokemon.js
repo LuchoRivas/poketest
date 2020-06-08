@@ -12,6 +12,7 @@ module.exports.getPokeByName = async (req, res, next) => {
         const pokemon_getSpecies = await P.getPokemonSpeciesByName(pokemonSearch);
         const pokemon_es_description = pokemon_getSpecies && pokemon_getSpecies.flavor_text_entries.filter(p => p.language.name === "es");
         pokemon.species = pokemon_es_description;
+        pokemon.variations = pokemon_getSpecies;
         return res.json(pokemon);
     }
     catch (err) {
