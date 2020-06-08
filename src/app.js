@@ -1,21 +1,8 @@
-// var compression = require('compression');
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const swaggerUi = require('swagger-ui-express');
 const config = require('./config').get();
 const environment = require('./config').getEnv();
-// const errorHandler = require('./middleware/error-handler');
-const swaggerSpec = require('./swagger-config');
-// const seedService = require('./services/seed');
-// Database connection.
-// mongoose.connect(config.database.connectionString, {
-//     useNewUrlParser: true
-// });
-// mongoose.connection.on('error', function (e) {
-//     throw e;
-// });
 
 // Express.js configuration.
 app.use(bodyParser.json());
@@ -55,9 +42,6 @@ app.use('/api/pokemon', require('./routes/pokemon'));
 
 // Public folder for public static assets.
 app.use(express.static('public'));
-
-// Swagger documentation specification
-// app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Listen for requests on the specified port.
 const port = process.env.PORT || config.port;
