@@ -34,7 +34,6 @@ app.get('/', (req, res) => {
 });
 
 app.get('/health-check', (req, res) => res.sendStatus(200));
-
 app.use('/api/pokemon', require('./routes/pokemon'));
 
 // Error handling middleware.
@@ -47,10 +46,7 @@ app.use(express.static('public'));
 const port = process.env.PORT || config.port;
 app.listen(port);
 
-// Print handy environment info on the console after .
+// Print handy environment info on the console after.
 console.log(process.version);
 console.log(environment);
 console.log('Listening on port: ' + port);
-
-// Execute seed.
-// seedService.execute().then();
