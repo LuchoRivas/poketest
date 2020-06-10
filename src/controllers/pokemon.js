@@ -15,7 +15,7 @@ module.exports.getPokeByName = async (req, res, next) => {
         const pokemonSearch = req.params.pokemon.toLowerCase();
         const get_pokemon = await P.getPokemonByName(pokemonSearch);
         const pokemon_getSpecies = await P.getPokemonSpeciesByName(pokemonSearch);
-        const pokemon_evolutions = pokemon_getSpecies.evolution_chain && await getPokemonEvolutions(pokemon_getSpecies.evolution_chain.url);
+        const pokemon_evolutions = pokemon_getSpecies.evolution_chain && await getPokemonEvolutions(pokemon_getSpecies.evolution_chain.url, pokemon_getSpecies.name);
         const pokemon = await mapToViewmodel(get_pokemon, pokemon_evolutions, pokemon_getSpecies);
 
         return res.json(pokemon);
@@ -28,7 +28,7 @@ module.exports.getPokeByName = async (req, res, next) => {
 /**
  * Obtiene las evoluciones de un pokemon en getPokeByName
 */
-async function getPokemonEvolutions(evolutionChainUrl) {
+async function getPokemonEvolutions(evolutionChainUrl, pokemon) {
     try {
         const pokemon_evolution_chain_names = [];
         const pokemon_evolution = [];
@@ -37,17 +37,24 @@ async function getPokemonEvolutions(evolutionChainUrl) {
         const pokemon_evoluton_chain = await P.getEvolutionChainById(evol_chain_id);
         if (pokemon_evoluton_chain.chain.evolves_to.length === 0)
             return;
-    
-        for (const evolution of pokemon_evoluton_chain.chain.evolves_to) {
-            pokemon_evolution_chain_names.push(evolution.species.name);
-            if (evolution.evolves_to.length > 0) {
-                for (const evol of evolution.evolves_to) {
-                    pokemon_evolution_chain_names.push(evol.species.name)
+
+        // Pushea a un array los nombres de los pokemon de la evol chain
+        const getEvolutionSpecies = async (arr) => {
+            if (typeof(arr) == "object") {
+                for (var i = 0; i < arr.evolves_to.length; i++) {
+                    getEvolutionSpecies(arr.evolves_to[i]);
                 }
             }
-        }
-        for (const pokemon of pokemon_evolution_chain_names) {
-            const result = await P.getPokemonByName(pokemon);
+            pokemon_evolution_chain_names.unshift(arr.species.name);
+        };
+            
+        await getEvolutionSpecies(pokemon_evoluton_chain.chain)
+        // Sirve para obtener todas las evol menos el pokemon actual
+        for (const pokemonToGet of pokemon_evolution_chain_names) {
+            let result;
+            if (pokemonToGet !== pokemon)
+                result = await P.getPokemonByName(pokemonToGet);
+
             result && pokemon_evolution.push(result);
         }
         return pokemon_evolution;
