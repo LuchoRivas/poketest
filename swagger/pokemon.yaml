@@ -3,7 +3,7 @@ paths:
   /pokemon/pokemonSearch/{pokemon}:
     get:
       tags:
-        - Vehicle-v2
+        - Pokedex
       summary: Busca un pokemon por nombre.
       produces:
         - aplication json
@@ -14,6 +14,19 @@ paths:
           schema:
             type: string
           description: Nombre del pokemon.
+      responses:
+        200:
+          description: Un objeto con informacion del pokemon.
+        400:
+          description: Algo salio mal.
+
+  /pokemon/pokemonlist:
+    get:
+      tags:
+        - Pokemon list
+      summary: Busca un pokemon por nombre.
+      produces:
+        - aplication json
       responses:
         200:
           description: Un objeto con informacion del pokemon.
