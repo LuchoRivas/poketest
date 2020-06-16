@@ -14,7 +14,7 @@ router.get(
  * Retrieves a pokemon list.
  */
 router.get(
-    '/pokemonlist',
+    '/pokemonlist/:limit/:offset',
     pokemonController.getPokeList
 );
 

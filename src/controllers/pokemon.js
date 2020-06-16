@@ -9,14 +9,13 @@ const P = new Pokedex();
 */
 module.exports.getPokeList = async (req, res, next) => {
     try {
-        let interval = {
-            limit: 10,
-            offset: 0
+        const interval = {
+            limit: parseInt(req.params.limit),
+            offset: parseInt(req.params.offset)
           }
-          P.getPokemonsList(interval)
-            .then(function(response) {
-              console.log(response);
-            }) 
+          const get_list = await P.getPokemonsList(interval);
+          return res.json(get_list);
+
     }
     catch (err) {
         return next(err);
