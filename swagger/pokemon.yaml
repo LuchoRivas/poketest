@@ -1,0 +1,21 @@
+
+paths:
+  /pokemon/pokemonSearch/{pokemon}:
+    get:
+      tags:
+        - Vehicle-v2
+      summary: Busca un pokemon por nombre.
+      produces:
+        - aplication json
+      parameters:
+        - in: path
+          name: pokemon
+          required: true
+          schema:
+            type: string
+          description: Nombre del pokemon.
+      responses:
+        200:
+          description: Un objeto con informacion del pokemon.
+        400:
+          description: Algo salio mal.
