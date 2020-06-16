@@ -5,6 +5,25 @@ const P = new Pokedex();
 // https://github.com/PokeAPI/pokedex-promise-v2
 
 /**
+ * Obtiene una lista de pokemons con getPokemonsList()
+*/
+module.exports.getPokeList = async (req, res, next) => {
+    try {
+        let interval = {
+            limit: 10,
+            offset: 0
+          }
+          P.getPokemonsList(interval)
+            .then(function(response) {
+              console.log(response);
+            }) 
+    }
+    catch (err) {
+        return next(err);
+    }
+};
+
+/**
  * Obtiene un pokemon a partir del nombre con getPokemonByName()
  * Obtiene info adicional con getPokemonSpeciesByName() 
  * Obtiene las evoluciones del pokemon con getPokemonEvolutions()
@@ -41,7 +60,7 @@ async function getPokemonEvolutions(evolutionChainUrl, pokemon) {
         // Pushea a un array los nombres de los pokemon de la evol chain
         const getEvolutionSpecies = async (arr) => {
             if (typeof(arr) == "object") {
-                for (var i = 0; i < arr.evolves_to.length; i++) {
+                for (let i = 0; i < arr.evolves_to.length; i++) {
                     getEvolutionSpecies(arr.evolves_to[i]);
                 }
             }
