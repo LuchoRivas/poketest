@@ -3,6 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const config = require('./config').get();
 const environment = require('./config').getEnv();
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger-config');
 
 // Express.js configuration.
 app.use(bodyParser.json());
@@ -34,7 +36,6 @@ app.get('/', (req, res) => {
 });
 
 app.get('/health-check', (req, res) => res.sendStatus(200));
-
 app.use('/api/pokemon', require('./routes/pokemon'));
 
 // Error handling middleware.
@@ -43,14 +44,14 @@ app.use('/api/pokemon', require('./routes/pokemon'));
 // Public folder for public static assets.
 app.use(express.static('public'));
 
+// Swagger documentation specification
+app.use('/swagger', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 // Listen for requests on the specified port.
 const port = process.env.PORT || config.port;
 app.listen(port);
 
-// Print handy environment info on the console after .
+// Print handy environment info on the console after.
 console.log(process.version);
 console.log(environment);
 console.log('Listening on port: ' + port);
-
-// Execute seed.
-// seedService.execute().then();

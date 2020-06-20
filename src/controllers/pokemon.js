@@ -7,21 +7,17 @@ const P = new Pokedex();
 /**
  * Obtiene un pokemon a partir del nombre con getPokemonByName()
  * Obtiene info adicional con getPokemonSpeciesByName() 
- * donde obtiene datos de pokedex (filtro por idioma español) y evolution_chain
+ * Obtiene las evoluciones del pokemon con getPokemonEvolutions()
+ * A lo ultimo mapToViewmodel() recopila la info necesaria para el front
 */
 module.exports.getPokeByName = async (req, res, next) => {
     try {
-        let pokemonEvol;
         const pokemonSearch = req.params.pokemon.toLowerCase();
-        const pokemon = await P.getPokemonByName(pokemonSearch);
+        const get_pokemon = await P.getPokemonByName(pokemonSearch);
         const pokemon_getSpecies = await P.getPokemonSpeciesByName(pokemonSearch);
-        if (pokemon_getSpecies.evolution_chain)
-            pokemonEvol = await getPokemonEvolutions(pokemon_getSpecies.evolution_chain.url);
-            
-        const pokemon_es_description = pokemon_getSpecies && pokemon_getSpecies.flavor_text_entries.filter(p => p.language.name === "es");
-        pokemon.species = pokemon_es_description;
-        //pokemon.evolutions = pokemonEvol;
-        pokemon.variations = pokemon_getSpecies;
+        const pokemon_evolutions = pokemon_getSpecies.evolution_chain && await getPokemonEvolutions(pokemon_getSpecies.evolution_chain.url, pokemon_getSpecies.name);
+        const pokemon = await mapToViewmodel(get_pokemon, pokemon_evolutions, pokemon_getSpecies);
+
         return res.json(pokemon);
     }
     catch (err) {
@@ -32,26 +28,57 @@ module.exports.getPokeByName = async (req, res, next) => {
 /**
  * Obtiene las evoluciones de un pokemon en getPokeByName
 */
-async function getPokemonEvolutions(evolutionChainUrl) {
-    const pokemon_evolution_chain_names = [];
-    const pokemon_evolution = [];
-    const get_evol_chain_id = evolutionChainUrl.split('/');
-    const evol_chain_id = parseInt(get_evol_chain_id[6]);
-    const pokemon_evoluton_chain = await P.getEvolutionChainById(evol_chain_id);
-    if (pokemon_evoluton_chain.chain.evolves_to.length === 0)
-        return;
+async function getPokemonEvolutions(evolutionChainUrl, pokemon) {
+    try {
+        const pokemon_evolution_chain_names = [];
+        const pokemon_evolution = [];
+        const get_evol_chain_id = evolutionChainUrl.split('/');
+        const evol_chain_id = parseInt(get_evol_chain_id[6]);
+        const pokemon_evoluton_chain = await P.getEvolutionChainById(evol_chain_id);
+        if (pokemon_evoluton_chain.chain.evolves_to.length === 0)
+            return;
 
-    for (const evolution of pokemon_evoluton_chain.chain.evolves_to) {
-        if (evolution.evolves_to.length > 0) {
-            for (const evol of evolution.evolves_to) {
-                pokemon_evolution_chain_names.push(evol.species.name)
+        // Pushea a un array los nombres de los pokemon de la evol chain
+        const getEvolutionSpecies = async (arr) => {
+            if (typeof(arr) == "object") {
+                for (var i = 0; i < arr.evolves_to.length; i++) {
+                    getEvolutionSpecies(arr.evolves_to[i]);
+                }
             }
+            pokemon_evolution_chain_names.unshift(arr.species.name);
+        };
+            
+        await getEvolutionSpecies(pokemon_evoluton_chain.chain)
+        // Sirve para obtener todas las evol menos el pokemon actual
+        for (const pokemonToGet of pokemon_evolution_chain_names) {
+            let result;
+            if (pokemonToGet !== pokemon)
+                result = await P.getPokemonByName(pokemonToGet);
+
+            result && pokemon_evolution.push(result);
         }
-        pokemon_evolution_chain_names.push(evolution.species.name);
+        return pokemon_evolution;
     }
-    for (const pokemon of pokemon_evolution_chain_names) {
-        const result = await P.getPokemonByName(pokemon);
-        result && pokemon_evolution.push(result);
+    catch (err) {
+        return next(err);
     }
-    return pokemon_evolution;
 };
+
+/**
+ * Mapea las distintas llamadas a la PokeAPI y retorna un viewmodel
+*/
+async function mapToViewmodel(pokemon, evolutions, species) {
+    const pokemon_viewmodel = {
+        id: pokemon.id,
+        name: pokemon.name,
+        types: pokemon.types,
+        sprites: pokemon.sprites,
+        evolutions: evolutions,
+        height: pokemon.height,
+        weight: pokemon.weight,
+        species: species.flavor_text_entries.filter(p => p.language.name === "es"),
+        abilities: pokemon.abilities,
+        stats: pokemon.stats
+    }
+    return pokemon_viewmodel;
+}
