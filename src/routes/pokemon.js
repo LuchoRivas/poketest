@@ -18,5 +18,12 @@ router.get(
     pokemonController.getPokeList
 );
 
+/**
+ * Retrieves a pokemon generation list.
+ */
+router.get(
+    '/generationslist/:limit/:offset',
+    pokemonController.getGenerationsList
+);
 
 module.exports = router;

@@ -45,3 +45,29 @@ paths:
           description: Un objeto con un array de resultados de pokemones.
         400:
           description: Algo salio mal LOL.
+
+  /pokemon/generationslist/{limit}/{offset}:
+    get:
+      tags:
+        - Pokemon generations list
+      summary: Genera una lista de 10 generationes.
+      produces:
+        - aplication json
+      parameters:
+        - in: path
+          name: limit
+          required: true
+          schema:
+            type: string
+          description: Limite de resultados de la lista.
+        - in: path
+          name: offset
+          required: true
+          schema:
+            type: string
+          description: Salto de pagina de resultados.
+      responses:
+        200:
+          description: Un objeto con un array de resultados de pokemones.
+        400:
+          description: Algo salio mal LOL.

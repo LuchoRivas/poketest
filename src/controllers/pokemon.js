@@ -7,6 +7,24 @@ const P = new Pokedex();
 /**
  * Obtiene una lista de pokemons con getPokemonsList()
 */
+module.exports.getGenerationsList = async (req, res, next) => {
+    try {
+        const interval = {
+            limit: parseInt(req.params.limit),
+            offset: parseInt(req.params.offset)
+          }
+          const get_list = await P.getGenerationsList(interval);
+          return res.json(get_list);
+
+    }
+    catch (err) {
+        return next(err);
+    }
+};
+
+/**
+ * Obtiene una lista de pokemons con getPokemonsList()
+*/
 module.exports.getPokeList = async (req, res, next) => {
     try {
         const interval = {
