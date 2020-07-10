@@ -82,3 +82,25 @@ async function mapToViewmodel(pokemon, evolutions, species) {
     }
     return pokemon_viewmodel;
 }
+
+/**
+ * Obtiene un pokemon a partir del nombre con getPokemonByName()
+ * Obtiene info adicional con getPokemonSpeciesByName() 
+ * Obtiene las evoluciones del pokemon con getPokemonEvolutions()
+ * A lo ultimo mapToViewmodel() recopila la info necesaria para el front
+*/
+module.exports.getPokesByType = async (req, res, next) => {
+    try {
+        const searchTerm = req.params.type;
+        const get = await P.getTypeByName(searchTerm);
+        console.log(get);
+        // const pokemon_getSpecies = await P.getPokemonSpeciesByName(pokemonSearch);
+        // const pokemon_evolutions = pokemon_getSpecies.evolution_chain && await getPokemonEvolutions(pokemon_getSpecies.evolution_chain.url, pokemon_getSpecies.name);
+        // const pokemon = await mapToViewmodel(get_pokemon, pokemon_evolutions, pokemon_getSpecies);
+
+        return res.json(get);
+    }
+    catch (err) {
+        return next(err);
+    }
+};

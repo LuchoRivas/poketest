@@ -7,5 +7,9 @@ const pokemonController = require('../controllers/pokemon');
  */
 router.get('/pokemonSearch/:pokemon', pokemonController.getPokeByName);
 
+/**
+ * Retrieves a pokemon.
+ */
+router.get('/typeSearch/:type', pokemonController.getPokesByType);
 
 module.exports = router;
