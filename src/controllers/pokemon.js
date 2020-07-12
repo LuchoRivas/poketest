@@ -41,7 +41,7 @@ async function getPokemonEvolutions(evolutionChainUrl, pokemon) {
         // Pushea a un array los nombres de los pokemon de la evol chain
         const getEvolutionSpecies = async (arr) => {
             if (typeof(arr) == "object") {
-                for (var i = 0; i < arr.evolves_to.length; i++) {
+                for (let i = 0; i < arr.evolves_to.length; i++) {
                     getEvolutionSpecies(arr.evolves_to[i]);
                 }
             }
