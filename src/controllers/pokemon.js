@@ -93,12 +93,24 @@ module.exports.getPokesByType = async (req, res, next) => {
     try {
         const searchTerm = req.params.type;
         const get = await P.getTypeByName(searchTerm);
-        console.log(get);
-        // const pokemon_getSpecies = await P.getPokemonSpeciesByName(pokemonSearch);
-        // const pokemon_evolutions = pokemon_getSpecies.evolution_chain && await getPokemonEvolutions(pokemon_getSpecies.evolution_chain.url, pokemon_getSpecies.name);
-        // const pokemon = await mapToViewmodel(get_pokemon, pokemon_evolutions, pokemon_getSpecies);
-
-        return res.json(get);
+        const pagination = {
+            skip: 0,
+            take: 10,
+            page: 1,
+            total: get.pokemon.length,
+            totalPage: Math.ceil(get.pokemon.length / 10)
+        };
+        const page_result = get.pokemon.slice(pagination.skip, pagination.take);
+        const viewModel = () => {
+            const vm = {
+                id: get.id,
+                pokemon: page_result,
+                pagination: pagination
+            }
+            return vm
+        }
+        const result = viewModel();
+        return res.json(result);
     }
     catch (err) {
         return next(err);
