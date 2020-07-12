@@ -84,10 +84,10 @@ async function mapToViewmodel(pokemon, evolutions, species) {
 }
 
 /**
- * Obtiene un pokemon a partir del nombre con getPokemonByName()
- * Obtiene info adicional con getPokemonSpeciesByName() 
- * Obtiene las evoluciones del pokemon con getPokemonEvolutions()
- * A lo ultimo mapToViewmodel() recopila la info necesaria para el front
+ * Obtiene el tipo y busca todos los pokemon
+ * una especie de paginacion recibe 10 del total
+ * desde el front falta enviar data para el skip
+ * TODO: intentar llenar con data los 10 resultados?
 */
 module.exports.getPokesByType = async (req, res, next) => {
     try {
