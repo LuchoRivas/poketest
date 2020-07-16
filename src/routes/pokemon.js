@@ -10,6 +10,6 @@ router.get('/pokemonSearch/:pokemon', pokemonController.getPokeByName);
 /**
  * Retrieves a pokemon.
  */
-router.get('/typeSearch/:type', pokemonController.getPokesByType);
+router.post('/typeSearch/:type', pokemonController.getPokesByType);
 
 module.exports = router;
