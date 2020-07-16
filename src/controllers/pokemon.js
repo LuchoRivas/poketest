@@ -92,20 +92,21 @@ async function mapToViewmodel(pokemon, evolutions, species) {
 module.exports.getPokesByType = async (req, res, next) => {
     try {
         const searchTerm = req.params.type;
+        const pagination_req = req.body;
         const get = await P.getTypeByName(searchTerm);
-        const pagination = {
-            skip: 0,
-            take: 10,
-            page: 1,
+        const pagination_res = {
+            skip: pagination_req.take * pagination_req.page, // basado en indice de array
+            take: (pagination_req.take * pagination_req.page) + pagination_req.take, // take basado en indice de array
+            page: pagination_req.page,
             total: get.pokemon.length,
-            totalPage: Math.ceil(get.pokemon.length / 10)
+            totalPage: Math.ceil(get.pokemon.length / pagination_req.take)
         };
-        const page_result = get.pokemon.slice(pagination.skip, pagination.take);
+        const page_result = get.pokemon.slice(pagination_res.skip, pagination_res.take); // cortar array (inicio, final)
         const viewModel = () => {
             const vm = {
                 id: get.id,
                 pokemon: page_result,
-                pagination: pagination
+                pagination: pagination_res
             }
             return vm
         }
